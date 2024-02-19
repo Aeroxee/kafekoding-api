@@ -82,7 +82,7 @@ func (ArticleHandlerV1) CreateHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
-		"data":    article,
+		"article": article,
 		"message": "Successfullt create new article.",
 	})
 }
@@ -172,6 +172,24 @@ func (ArticleHandlerV1) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "Update article successfully",
-		"data":    article,
+		"article": article,
+	})
+}
+
+func (ArticleHandlerV1) Detail(ctx *gin.Context) {
+	slugArticle := ctx.Param("slug")
+	article, err := models.NewArticleModel(models.DB()).GetArticleBySlug(slugArticle)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": fmt.Sprintf("Article with slug: %s is not found error.", slugArticle),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "",
+		"article": article,
 	})
 }
