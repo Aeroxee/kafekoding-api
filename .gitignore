@@ -1,0 +1,4 @@
+media/**
+vendor/**
+.env
+kafekodingapi
