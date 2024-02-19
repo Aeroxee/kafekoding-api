@@ -115,3 +115,63 @@ func (ArticleHandlerV1) Get(ctx *gin.Context) {
 		"total":    count,
 	})
 }
+
+func (ArticleHandlerV1) Update(ctx *gin.Context) {
+	thisUser, err := getUserFromContext(ctx.Request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Authentication is required.",
+		})
+		return
+	}
+
+	slugArticle := ctx.Param("slug")
+	article, err := models.NewArticleModel(models.DB()).GetArticleBySlug(slugArticle)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": fmt.Sprintf("Article with slug: %s is not found error.", slugArticle),
+		})
+		return
+	}
+
+	if thisUser.ID != article.UserID {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "You don't have permission to update this article.",
+		})
+		return
+	}
+
+	payloads := struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+		Status  string `json:"status"`
+	}{}
+	err = ctx.ShouldBindJSON(&payloads)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Payload error",
+		})
+		return
+	}
+
+	if payloads.Title != "" {
+		article.Title = payloads.Title
+	}
+	if payloads.Content != "" {
+		article.Content = payloads.Content
+	}
+
+	article.Status = models.ArticleStatus(payloads.Status)
+
+	// save
+	models.DB().Save(&article)
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Update article successfully",
+		"data":    article,
+	})
+}
