@@ -9,6 +9,7 @@ func ArticleControllerNoAuth(group *gin.RouterGroup) {
 	articleHandlerV1 := handlers.NewArticleHandlerV1()
 
 	group.GET("", articleHandlerV1.Get)
+	group.GET("/:slug", articleHandlerV1.Detail)
 }
 
 func ArticleControllerWithAuth(group *gin.RouterGroup) {
