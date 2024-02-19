@@ -14,4 +14,5 @@ func ArticleControllerNoAuth(group *gin.RouterGroup) {
 func ArticleControllerWithAuth(group *gin.RouterGroup) {
 	articleHandlerV1 := handlers.NewArticleHandlerV1()
 	group.POST("", articleHandlerV1.CreateHandler)
+	group.PUT("/:slug", articleHandlerV1.Update)
 }
