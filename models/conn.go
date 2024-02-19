@@ -12,7 +12,7 @@ func DB() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&User{}, &Article{}, &Class{}, &ClassMeeting{}, &ClassImage{},
-		&ClassMeetingAttendance{})
+	db.AutoMigrate(&User{}, &Class{}, &ClassMeeting{}, &ClassImage{},
+		&ClassMeetingAttendance{}, &Article{}, &ArticleComment{})
 	return db
 }
